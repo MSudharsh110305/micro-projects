@@ -1,4 +1,6 @@
 import unittest
+import math
+import random
 
 def safe_divide(a, b, mode="float", rounding = None):
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
@@ -30,6 +32,21 @@ class TestSafeDivide(unittest.TestCase):
         self.assertEqual(safe_divide(10, -3, mode="floor"), -4)
         self.assertEqual(safe_divide(-10, -3, mode="floor"), 3)
         self.assertEqual(safe_divide(10.5, 2.5), 4.2)  
+
+        # lets try randomized tests using random
+        for i in range(1000000):
+            a = random.uniform(-10000, 10000)
+            b = random.uniform(-10000, 10000)
+            if abs(b) < 1e-6:
+                b = 1.0
+            rounding = random.choice([None, 0, 1, 2, 3])
+            mode = random.choice(["float", "floor"])
+            with self.subTest(a=a, b=b, mode=mode, rounding=rounding):
+                if mode == "float":expected = a / b 
+                else: expected= a // b
+                if rounding is not None:
+                    expected = round(expected, rounding)
+                self.assertEqual(safe_divide(a, b, mode=mode, rounding=rounding), expected)
     
     def test_err(self):
         with self.assertRaises(ValueError):
