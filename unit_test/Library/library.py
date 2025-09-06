@@ -1,3 +1,5 @@
+from library_decorator import log_time
+
 class Book:
     def __init__(self, title: str, author: str, copies: int = 1):
         if not isinstance(title, str) or not isinstance(author, str) or not title or not author:
@@ -19,11 +21,11 @@ class Book:
     def return_copy(self):
         self.copies += 1
 
-
 class Library:
     def __init__(self):
         self.books = {}
 
+    @log_time
     def add_book(self, book: Book):
         if not isinstance(book, Book):
             raise ValueError("Invalid book")
@@ -33,6 +35,7 @@ class Library:
         else:
             self.books[key] = Book(book.title, book.author, book.copies)
 
+    @log_time
     def borrow_book(self, title: str, author: str):
         key = (title, author)
         if key not in self.books:
@@ -41,12 +44,14 @@ class Library:
             raise ValueError("Book not available")
         self.books[key].borrow()
 
+    @log_time
     def return_book(self, title: str, author: str):
         key = (title, author)
         if key not in self.books:
             raise LookupError("Book not found in library")
         self.books[key].return_copy()
 
+    @log_time
     def get_book_info(self, title: str, author: str) -> dict:
         key = (title, author)
         if key not in self.books:
